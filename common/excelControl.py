@@ -5,6 +5,7 @@ import time
 class excelControl():
 
     def openXls(self, filePath, sheetName):
+        self.filePath = filePath
         try:
             self.fileDir = ""
             for dir in filePath.split("/")[:-1]:
@@ -32,12 +33,33 @@ class excelControl():
             print("数据写入错误, 未写入数据: {}".format(data))
             print(traceback.format_exc())
 
-    def saveXls(self):
-        now = time.strftime("%Y%m%d-%H%M%S")
-        fileName = now+self.fileName
-        filePath = self.fileDir+fileName
-        self.workbook.save(filePath)
-        print("文件保存路径: {}".format(filePath))
+    def saveXls(self, type="new"):
+        if type == "new":
+            now = time.strftime("%Y%m%d-%H%M%S")
+            fileName = now+self.fileName
+            filePath = self.fileDir+fileName
+            self.workbook.save(filePath)
+            print("文件保存路径: {}".format(filePath))
+            return True, filePath
+
+        elif type == "origin":
+            try:
+                self.workbook.save(self.filePath)
+                return True, self.filePath
+            except Exception:
+                now = time.strftime("%Y%m%d-%H%M%S")
+                fileName = now + self.fileName
+                filePath = self.fileDir + fileName
+                self.workbook.save(filePath)
+                print("文件保存路径: {}".format(filePath))
+                return False, filePath
+        else:
+            now = time.strftime("%Y%m%d-%H%M%S")
+            fileName = now + self.fileName
+            filePath = self.fileDir + fileName
+            self.workbook.save(filePath)
+            print("文件保存路径: {}".format(filePath))
+            return True, filePath
 
 if __name__ == "__main__":
     tst = excelControl()
