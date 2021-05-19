@@ -10,7 +10,7 @@ class mainFunc():
     def openXls(self,filePath, sheetName):
         self.xls.openXls(filePath, sheetName)
 
-    def dataDeal(self, startCell, endCell, outCell):
+    def dataDeal(self, startCell, endCell, outCell, method, resultsNum=3):
         startChr, startNUm = startCell[0], startCell[1:]
         endChr, endNUm = endCell[0], endCell[1:]
         resultDatas = []
@@ -25,16 +25,49 @@ class mainFunc():
                         nums.append(res)
                 except Exception:
                     self.app.print_text("Error: 数据导入失败.. 失败单元格: {}".format(chr(column)+str(row)))
-            resData = dataDeal.modeNums(nums = nums, resultsNum=3)
-            resultDatas.append(resData)
-            self.app.print_text(str(resData))
-        self.app.print_text("--------------------------")
-        self.app.print_text("运算结束\n")
+            # ("众数:3", "平均数", "样本标准差", "样本方差", "总体标准差", "总体方差") mode average stdev variance pstdev pvariance
+            if method == "mode":
+                resData = dataDeal.modeNums(nums = nums, resultsNum=resultsNum)
+                resultDatas.append(resData)
+                self.app.print_text(str(resData))
+            elif method == "average":
+                resData = dataDeal.avgNum(nums=nums)
+                resultDatas.append(resData)
+                self.app.print_text(str(resData))
+            elif method == "stdev":
+                resData = dataDeal.stdevNum(nums=nums)
+                resultDatas.append(resData)
+                self.app.print_text(str(resData))
+            elif method == "variance":
+                resData = dataDeal.varianceNum(nums=nums)
+                resultDatas.append(resData)
+                self.app.print_text(str(resData))
+            elif method == "pstdev":
+                resData = dataDeal.pstdevNum(nums=nums)
+                resultDatas.append(resData)
+                self.app.print_text(str(resData))
+            elif method == "pvariance":
+                resData = dataDeal.pvarianceNum(nums=nums)
+                resultDatas.append(resData)
+                self.app.print_text(str(resData))
+
+        self.app.print_text("运算结束")
+        self.app.print_text("--------------------------\n")
+
 
         outChr, outNum = outCell[0], outCell[1:]
         for column in range(len(resultDatas)):
             for row in range(len(resultDatas[column])):
-                cell = chr(ord(outChr)+column) + str(int(outNum)+row)
+                if ord(outChr)+column >= 65 and ord(outChr)+column <= 90:
+                    cell = chr(ord(outChr)+column) + str(int(outNum)+row)
+                elif ord(outChr)+column >90 and ord(outChr)+column <= (90+26):
+                    outChr2 = chr(ord(outChr)+column - 90 + 64)
+                    cell = "A"+ outChr2 + str(int(outNum)+row)
+                    print(ord(outChr)+column - 90 + 64)
+                    print(cell)
+                else:
+                    cell = ""
+                    self.app.print_text("Error: Excel输出超过最大列数")
                 self.xls.writeXls(cell=cell, data=resultDatas[column][row])
 
         # 存储表格, 可自定义是否另存为
@@ -83,9 +116,26 @@ class mainFunc():
             except Exception:
                 self.app.print_text("文件解析失败..")
                 self.app.print_text(traceback.format_exc())
+            method = self.app.calMethodInput.get()
+            # ("众数: 3", "平均数", "样本标准差", "样本方差", "总体标准差", "总体方差") mode average stdev variance pstdev pvariance
+            if method.find("众数") != -1:
+                resultsNum = int(method.split(":")[-1])
+                self.app.print_text("众数取值: {}".format(resultsNum))
+                self.dataDeal(startCell=startCell, endCell=endCell, outCell=outCell, method="mode", resultsNum=resultsNum)
+            elif method == "平均数":
+                self.dataDeal(startCell=startCell, endCell=endCell, outCell=outCell, method="average")
+            elif method == "样本标准差":
+                self.dataDeal(startCell=startCell, endCell=endCell, outCell=outCell, method="stdev")
+            elif method == "样本方差":
+                self.dataDeal(startCell=startCell, endCell=endCell, outCell=outCell, method="variance")
+            elif method == "总体标准差":
+                self.dataDeal(startCell=startCell, endCell=endCell, outCell=outCell, method="pstdev")
+            elif method == "总体方差":
+                self.dataDeal(startCell=startCell, endCell=endCell, outCell=outCell, method="pvariance")
 
-            if self.app.calMethodInput.get() == "取众数":
-                self.dataDeal(startCell=startCell, endCell=endCell, outCell=outCell)
+
+
+
 
 
 
@@ -100,8 +150,7 @@ class mainFunc():
 
 
         # 补充配置,补充gui中button_run按钮的command参数
-        if self.app.calMethodInput.get() == "取众数":
-            self.app.button_run.config(command=self.run)
+        self.app.button_run.config(command=self.run)
         # 主循环开始
         self.app.mainloop()
 

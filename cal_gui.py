@@ -110,7 +110,7 @@ class MainUI(tk.Frame):
         # self.testStatusInput.place(x=125, y=105)
         # V2.1版本Combobox组件,设计成下拉菜单
         self.calMethodInput = ttk.Combobox(self.controlerArea, width=23, font=('微软雅黑'))
-        self.calMethodInput["value"] = ("取众数","待更新")
+        self.calMethodInput["value"] = ("众数: 3","平均数" ,"样本标准差","样本方差", "总体标准差", "总体方差")
         self.calMethodInput.current(0)
         self.calMethodInput.place(x=125, y=105)
 
