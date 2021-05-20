@@ -30,7 +30,7 @@ class mainFunc():
                 except Exception:
                     self.app.print_text("Error: 数据导入失败.. 失败单元格: {}".format(chr(column)+str(row)))
 
-            # ("自定义样本标准差: 3","众数: 3","平均数" ,"样本标准差","样本方差", "总体标准差", "总体方差") mode average stdev variance pstdev pvariance
+            # ("自定义格式化输出: 3","自定义样本标准差: 3","众数: 3","平均数" ,"样本标准差","样本方差", "总体标准差", "总体方差") customFormat customStdev mode average stdev variance pstdev pvariance
             if method == "mode":
                 resData = dataDeal.modeNums(nums = nums, resultsNum=resultsNum)
                 resultDatas.append(resData)
@@ -123,6 +123,7 @@ class mainFunc():
         endCell = endChr + endNum
         outCell = outChr + outNum
 
+
         filePath = self.app.path.get()
         sheetName = self.app.sheetNameInput.get()
         if startNum == '' or endNum == '' or outNum == '':
@@ -138,7 +139,7 @@ class mainFunc():
                 self.app.print_text("文件解析失败..")
                 self.app.print_text(traceback.format_exc())
             method = self.app.calMethodInput.get()
-            # ("自定义样本标准差: 3","众数: 3","平均数" ,"样本标准差","样本方差", "总体标准差", "总体方差") customStdev mode average stdev variance pstdev pvariance
+            # ("自定义格式化输出: 3","自定义样本标准差: 3","众数: 3","平均数" ,"样本标准差","样本方差", "总体标准差", "总体方差") customFormat customStdev mode average stdev variance pstdev pvariance
             if method.find("众数") != -1:
                 resultsNum = int(method.split(":")[-1])
                 if resultsNum == 0:
@@ -146,6 +147,29 @@ class mainFunc():
                 else:
                     self.app.print_text("众数取值: {}".format(resultsNum))
                     self.dataDeal(startCell=startCell, endCell=endCell, outCell=outCell, method="mode", resultsNum=resultsNum)
+            elif method.find("自定义格式化输出") != -1:
+                resultsNum = int(method.split(":")[-1])
+                # 自定义格式化输出第二\三组数据的时候使用
+                outCell2 = outChr + str(int(outNum) + resultsNum)
+                outCell3 = outChr + str(int(outNum) + resultsNum + 1)
+                endCell2 = endChr + str(int(outNum) + resultsNum - 1)
+                if resultsNum == 0:
+                    self.app.print_text("Error: 取值不能为0")
+                else:
+                    # 样本标准差小于0.05的众数
+                    print(startCell, endCell, outCell)
+                    self.app.print_text("样本标准差众数取值: {}".format(resultsNum))
+                    self.dataDeal(startCell=startCell, endCell=endCell, outCell=outCell, method="customStdev",resultsNum=resultsNum)
+                    # 平均值
+                    print(outCell, endCell2, outCell2)
+                    self.app.print_text("平均值：")
+                    self.dataDeal(startCell=outCell, endCell=endCell2, outCell=outCell2, method="average")
+                    # 标准差
+                    print(outCell, endCell2, outCell3)
+                    self.app.print_text("标准差：")
+                    self.dataDeal(startCell=outCell, endCell=endCell2, outCell=outCell3, method="stdev")
+
+
             elif method.find("自定义样本标准差") != -1:
                 resultsNum = int(method.split(":")[-1])
                 if resultsNum == 0:
