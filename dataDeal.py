@@ -35,6 +35,8 @@ class dataDeal():
     # 获取 平均值 返回list
     @classmethod
     def avgNum(cls, nums: [int]):
+        if len(nums) < 1:
+            return nums
         return [mean(nums)]
 
     # 获取 总体标准差 返回list

@@ -28,7 +28,7 @@ class mainFunc():
                     if isinstance(res, float) or isinstance(res, int):
                         nums.append(res)
                 except Exception:
-                    self.app.print_text("Error: 数据导入失败.. 失败单元格: {}".format(chr(column)+str(row)))
+                    self.app.print_text("【ERROR】：数据导入失败.. 失败单元格: {}".format(chr(column)+str(row)))
 
             # ("自定义格式化输出: 3","自定义样本标准差: 3","众数: 3","平均数" ,"样本标准差","样本方差", "总体标准差", "总体方差") customFormat customStdev mode average stdev variance pstdev pvariance
             if method == "mode":
@@ -88,7 +88,7 @@ class mainFunc():
                     print(cell)
                 else:
                     cell = ""
-                    self.app.print_text("Error: Excel输出超过最大列数")
+                    self.app.print_text("【ERROR】： Excel输出超过最大列数")
                 self.xls.writeXls(cell=cell, data=resultDatas[column][row])
 
         # 存储表格, 可自定义是否另存为
@@ -98,7 +98,7 @@ class mainFunc():
                 self.app.print_text("文件另存为成功, 文件地址:")
                 self.app.print_text(filePath)
             else:
-                self.app.print_text("Error: 文件另存为失败, 应存的文件地址:")
+                self.app.print_text("【ERROR】： 文件另存为失败, 应存的文件地址:")
                 self.app.print_text(filePath)
         else:
             state, filePath = self.xls.saveXls(type="origin")
@@ -106,7 +106,7 @@ class mainFunc():
                 self.app.print_text("保存原文件成功, 文件地址:")
                 self.app.print_text(filePath)
             else:
-                self.app.print_text("Error: 保存原文件失败, 请检查原文件是否已关闭, 未关闭时无法保存..")
+                self.app.print_text("【ERROR】： 保存原文件失败, 请检查原文件是否已关闭, 未关闭时无法保存..")
                 self.app.print_text("文件已另存为, 文件地址: ")
                 self.app.print_text(filePath)
 
@@ -127,9 +127,9 @@ class mainFunc():
         filePath = self.app.path.get()
         sheetName = self.app.sheetNameInput.get()
         if startNum == '' or endNum == '' or outNum == '':
-            self.app.print_text("Error: 请输入正确的单元格..")
+            self.app.print_text("【ERROR】： 请输入正确的单元格..")
         elif self.app.path.get() == '':
-            self.app.print_text("Error: 请选择正确的文件路径..")
+            self.app.print_text("【ERROR】： 请选择正确的文件路径..")
 
         else:
             # 操作文件流
@@ -143,7 +143,7 @@ class mainFunc():
             if method.find("众数") != -1:
                 resultsNum = int(method.split(":")[-1])
                 if resultsNum == 0:
-                    self.app.print_text("Error: 取值不能为0")
+                    self.app.print_text("【ERROR】： 取值不能为0")
                 else:
                     self.app.print_text("众数取值: {}".format(resultsNum))
                     self.dataDeal(startCell=startCell, endCell=endCell, outCell=outCell, method="mode", resultsNum=resultsNum)
@@ -154,7 +154,7 @@ class mainFunc():
                 outCell3 = outChr + str(int(outNum) + resultsNum + 1)
                 endCell2 = endChr + str(int(outNum) + resultsNum - 1)
                 if resultsNum == 0:
-                    self.app.print_text("Error: 取值不能为0")
+                    self.app.print_text("【ERROR】： 取值不能为0")
                 else:
                     # 样本标准差小于0.05的众数
                     print(startCell, endCell, outCell)
@@ -173,7 +173,7 @@ class mainFunc():
             elif method.find("自定义样本标准差") != -1:
                 resultsNum = int(method.split(":")[-1])
                 if resultsNum == 0:
-                    self.app.print_text("Error: 取值不能为0")
+                    self.app.print_text("【ERROR】： 取值不能为0")
                 else:
                     self.app.print_text("样本标准差取值: {}".format(resultsNum))
                     self.dataDeal(startCell=startCell, endCell=endCell, outCell=outCell, method="customStdev", resultsNum=resultsNum)
@@ -188,10 +188,12 @@ class mainFunc():
             elif method == "总体方差":
                 self.dataDeal(startCell=startCell, endCell=endCell, outCell=outCell, method="pvariance")
 
-
-
-
-
+    def runSafe(self):
+        try:
+            self.run()
+        except Exception:
+            self.app.print_text("【ERROR】： 系统遇到意外问题，请联系管理员..")
+            self.app.print_text(str(traceback.format_exc()))
 
 
     def MainApp(self):
@@ -205,7 +207,7 @@ class mainFunc():
 
 
         # 补充配置,补充gui中button_run按钮的command参数
-        self.app.button_run.config(command=self.run)
+        self.app.button_run.config(command=self.runSafe)
         # 主循环开始
         self.app.mainloop()
 
