@@ -76,7 +76,7 @@ class dataDeal():
             if cls.stdevNum(nums)[0] <= 0.05:
                 return False, cls.stdevNum(nums)[0], nums
             else:
-                return False, 400, []
+                return False, 400, nums
         else:
             nums.sort(reverse = False)
             window = [nums[i] for i in range(resultsNum)]
@@ -90,7 +90,7 @@ class dataDeal():
             if cls.stdevNum(result)[0] <= 0.05:
                 return True, cls.stdevNum(result)[0], result
             else:
-                return False, cls.stdevNum(result)[0], []
+                return False, cls.stdevNum(result)[0], result
 
 
 

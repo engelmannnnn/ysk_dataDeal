@@ -2,6 +2,9 @@ from common.excelControl import excelControl
 import traceback
 from dataDeal import dataDeal
 from cal_gui import MainUI
+
+
+
 class mainFunc():
     def __init__(self):
         self.xls = excelControl()
@@ -40,12 +43,12 @@ class mainFunc():
                 resultDatas.append(resData)
                 if status == False:
                     if stdev_res <= 0.05:
-                        self.app.print_text("注意：{}输入数据个数小于设置的输出数据个数,该组数据最小标准差小于等于0.05为：{}，已全部输出在表格中..".format(nums, round(stdev_res,3)))
+                        self.app.print_text("注意：{}输入数据个数小于设置的输出数据个数,该组数据 {} 最小标准差小于等于0.05为：{}，已全部输出在表格中..".format(nums, resData,round(stdev_res,3)))
                     elif stdev_res == 400:
-                        self.app.print_text("注意：{}输入数据个数小于设置的输出数据个数,且该组数据最小标准差大于0.05为：{}， 该组数据已舍弃..".format(nums,  round(stdev_res,3)))
+                        self.app.print_text("注意：{}输入数据个数小于设置的输出数据个数,且该组数据 {} 最小标准差大于0.05为：{}， 该组数据已标记..".format(nums,resData , round(stdev_res,3)))
                         discard_nums.append(nums)
                     else:
-                        self.app.print_text("注意：{}该组数据最小标准差大于0.05为：{},该组数据已舍弃..".format(nums,  round(stdev_res,3)))
+                        self.app.print_text("注意：{}该组数据 {} 最小标准差大于0.05为：{},该组数据已标记..".format(nums,  resData ,round(stdev_res,3)))
                         discard_nums.append(nums)
                 else:
                     self.app.print_text(str(resData))
@@ -89,6 +92,9 @@ class mainFunc():
                 else:
                     cell = ""
                     self.app.print_text("【ERROR】： Excel输出超过最大列数")
+                # 如果标准差大于0.05 就在表格里标记成黄色
+                if method == "stdev" and resultDatas[column][row] > 0.05:
+                    self.xls.setColor(cell, "FFC125")
                 self.xls.writeXls(cell=cell, data=resultDatas[column][row])
 
         # 存储表格, 可自定义是否另存为

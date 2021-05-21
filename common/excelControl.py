@@ -1,4 +1,5 @@
 from openpyxl import load_workbook
+from openpyxl.styles import PatternFill
 import traceback
 import time
 
@@ -33,6 +34,11 @@ class excelControl():
             print("数据写入错误, 未写入数据: {}".format(data))
             print(traceback.format_exc())
 
+    # 默认橙色
+    def setColor(self,cell, color="FFC125"):
+        color_fill = PatternFill(fill_type='solid', fgColor=color)
+        self.worksheet[cell].fill = color_fill
+
     def saveXls(self, type="new"):
         if type == "new":
             now = time.strftime("%Y%m%d-%H%M%S")
@@ -66,4 +72,5 @@ if __name__ == "__main__":
     filePath = "E:/PyProject/ysk_dataDeal/result/毒性增殖试验.xlsx"
     path2 = "E:/PyProject/DataSpider/result/Marketplace_salesforce.xlsx"
     tst.openXls(filePath,"Sheet1")
+    tst.setColor('A4','FFC125')
     tst.saveXls()
